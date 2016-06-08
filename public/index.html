@@ -33,33 +33,42 @@
       Date.now = function() { return new Date().getTime(); }
   }
 
-  var clickCount = 0;
+  var waitingForClick = false
   var flashTime, clickTime, responseLength;
 
   document.onclick = function(e) {
-    clickCount++;
-    console.log(clickCount);
-    if (clickCount == 1) {
-      document.getElementById('flashingBg').style.display = 'block';
-
-      setTimeout(function() {
-        document.getElementById('redFlash').style.display = 'block';
-        document.getElementById('flashingBg').style.display = 'none';
-        flashTime = Date.now();
-        console.log(flashTime);
-      }, 1000 + Math.random() * 4000);
-
-    } else {
+    if (waitingForClick) {
       clickTime = Date.now();
       console.log(clickTime);
       console.log(clickTime - flashTime);
-      clickCount = 0;
+      waitingForClick = false;
     }
   }
+
+  function r(f){/in/.test(document.readyState)?setTimeout(r,9,f):f()}
+  r(function(){
+
+    // ready
+
+
+    var socket = io.connect(window.location.hostname + ":" + window.location.port);
+    socket.on('flash', function() {
+      document.getElementById('redFlash').style.display = 'block';
+      document.getElementById('flashingBg').style.display = 'none';
+      flashTime = Date.now();
+      console.log(flashTime);
+      waitingForClick = true;
+    });
+
+  });
+
   </script>
 </head>
 <body>
   <div id="flashingBg"></div>
   <div id="redFlash"></div>
+
+  <!-- javascript includes -->
+  <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
 </body>
 </html>
