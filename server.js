@@ -14,10 +14,18 @@ io.sockets.on('connection', function (socket) {
   console.log('connected socket');
 });
 
-function sendFlash() {
-  io.sockets.emit('flash');
-  console.log('flash')
-  setTimeout(sendFlash, (10 + Math.random() * 10) * 1000 );
+function startGame() {
+  io.sockets.emit('start');
+  console.log('start')
+
+  setTimeout(function() {
+    io.sockets.emit('flash');
+    console.log('flash')
+
+    setTimeout(startGame, 10000);
+
+  }, (10 + Math.random() * 10) * 1000 );
+
 }
 
-setTimeout(sendFlash, 2000);
+setTimeout(startGame, 2000);
