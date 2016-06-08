@@ -3,30 +3,63 @@
   <title>first to click</title>
   <style>
   @-webkit-keyframes colours {
-  	  0% {background-color: #39f;}
-  	 15% {background-color: #8bc5d1;}
-  	 30% {background-color: #f8cb4a;}
-  	 45% {background-color: #95b850;}
-  	 60% {background-color: #944893;}
-  	 75% {background-color: #c71f00;}
-  	 90% {background-color: #bdb280;}
-  	100% {background-color: #39f;}
+  	  0% {background-color: #FDEE00;}
+  	 25% {background-color: #FBEC5D;}
+  	 50% {background-color: #FFFF00;}
+  	 75% {background-color: #FFD800;}
+  	 100% {background-color: #FDEE00;}
   }
-  #flashingBg {
-  	-webkit-animation-direction: normal;
-  	-webkit-animation-duration: 10s;
-  	-webkit-animation-iteration-count: infinite;
-  	-webkit-animation-name: colours;
-  	-webkit-animation-timing-function: ease;
+  #flashingBg, #redFlash {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    display: none;
+  }
+  #flashingBg {
+  	-webkit-animation-direction: normal;
+  	-webkit-animation-duration: 1s;
+  	-webkit-animation-iteration-count: infinite;
+  	-webkit-animation-name: colours;
+  	-webkit-animation-timing-function: linear;
+  }
+  #redFlash {
+    background-color: red;
   }
   </style>
+  <script>
+  if (!Date.now) {
+      Date.now = function() { return new Date().getTime(); }
+  }
+
+  var clickCount = 0;
+  var flashTime, clickTime, responseLength;
+
+  document.onclick = function(e) {
+    clickCount++;
+    console.log(clickCount);
+    if (clickCount == 1) {
+      document.getElementById('flashingBg').style.display = 'block';
+
+      setTimeout(function() {
+        document.getElementById('redFlash').style.display = 'block';
+        document.getElementById('flashingBg').style.display = 'none';
+        flashTime = Date.now();
+        console.log(flashTime);
+      }, 1000 + Math.random() * 4000);
+
+    } else {
+      clickTime = Date.now();
+      console.log(clickTime);
+      console.log(clickTime - flashTime);
+      clickCount = 0;
+    }
+  }
+  </script>
 </head>
 <body>
   <div id="flashingBg"></div>
+  <div id="redFlash"></div>
 </body>
 </html>
