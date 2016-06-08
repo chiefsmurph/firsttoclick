@@ -53,7 +53,7 @@
   var elements = function(el) {
     return document.getElementById(el);
   }
-  document.onclick = function(e) {
+  var handleclick = function(e) {
     if (waitingForClick) {
       clickTime = Date.now();
       console.log(clickTime);
@@ -64,6 +64,9 @@
       flashText(diff + 'ms', 5200);
     }
   }
+
+  document.addEventListener("click", handleclick, true);
+  document.addEventListener("touchstart", handleclick, true);
 
   var flashFade = 0;
   function flashText (text, length) {
