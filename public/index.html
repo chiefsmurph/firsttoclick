@@ -36,7 +36,7 @@
   }
   #text {
     padding: 5% 10%;
-    font-size: 6vh;
+    font-size: 6vw;
     display: block;
     text-align: center;
     width: 80%;
@@ -46,36 +46,37 @@
   if (!Date.now) {
       Date.now = function() { return new Date().getTime(); }
   }
-
-  var waitingForClick = false
   var flashTime, clickTime, responseLength;
 
   var elements = function(el) {
     return document.getElementById(el);
   }
+
+  var state = null;
+  var flashFade = 0;
+
   var handleclick = function(e) {
-    if (waitingForClick) {
+    if (state === 2) {
       clickTime = Date.now();
       console.log(clickTime);
       var diff = clickTime - flashTime;
       console.log(diff);
-      waitingForClick = false;
       //elements('text').innerHTML = diff + 'ms';
       flashText(diff + 'ms', 5200);
+      state = 3;
     }
   }
 
   document.addEventListener("click", handleclick, true);
   document.addEventListener("touchstart", handleclick, true);
 
-  var flashFade = 0;
   function flashText (text, length) {
     elements('text').innerHTML = text;
     fadeIn(elements('text'));
     flashFade++;
     setTimeout(function() {
       console.log(flashFade);
-      if (flashFade === 1) {
+      if (flashFade === 1) { // handles overlapping flashtext's
         fadeOut(elements('text'), length / 2);
       }
       flashFade--;
@@ -89,25 +90,26 @@
   r(function(){
 
     // ready
-
-
     var socket = io.connect(window.location.hostname + ":" + window.location.port);
     socket.on('start', function() {
       elements('flashingBgFast').style.display = 'block';
       elements('flashingBgSlow').style.display = 'block';
       elements('redFlash').style.display = 'none';
       flashText('GAME ON!', 2000);
+      state = 1;
     });
 
     socket.on('flash', function() {
-      fadeIn(elements('redFlash'));
-      elements('flashingBgFast').style.display = 'none';
-      elements('flashingBgSlow').style.display = 'none';
-      flashTime = Date.now();
-      console.log(flashTime);
-      waitingForClick = true;
-      fadeIn(elements('text'));
-      elements('text').innerHTML = 'FLASH!';
+      if (state = 1) {
+        fadeIn(elements('redFlash'));
+        elements('flashingBgFast').style.display = 'none';
+        elements('flashingBgSlow').style.display = 'none';
+        flashTime = Date.now();
+        console.log(flashTime);
+        fadeIn(elements('text'));
+        elements('text').innerHTML = 'FLASH!';
+        state = 2;
+      }
     });
 
   });
